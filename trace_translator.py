@@ -128,24 +128,37 @@ def analyze_trace(input_file_path, sector_size):
                 print("error")
     return write_option_num, write_sector_num, read_option_num, read_sector_num, read_before_write_sector_num
 
+def del_read_trace(input_file_path, output_file_path):
+    with open(input_file_path, 'r') as input_file, open(output_file_path, 'w') as output_file:
+        for row in input_file:
+            arr_time, device_no, s_LSA, offset, mode = row.split()
+            if mode == '0':
+                output_file.write(row)
+            elif mode == '1':
+                pass
+
 def print_result(write_option_num, write_sector_num, read_option_num, read_sector_num, read_before_write_sector_num):
     print("Total write option num: ", write_option_num)
     print("Total read option num: ", read_option_num)
     print("Total write sector num(include read before write): ", write_sector_num)
     print("Total read sector num: ", read_sector_num)
     print("Total read before write sector num: ", read_before_write_sector_num)
-    print("Percentage of read before write sector in total read sector num: ", read_before_write_sector_num / read_sector_num * 100, '%')
+    if read_sector_num != 0:
+        print("Percentage of read before write sector in total read sector num: ", read_before_write_sector_num / read_sector_num * 100, '%')
+    else:
+        print("Percentage of read before write sector in total read sector num: N/A %")
 
 if __name__ == "__main__":
     #input_file_path = "trace\ssdTrace-02_extract.txt"
     #output_file_path = "ssdTrace_extract.txt"
-    input_file_path = "C:/Users/s6112/Downloads/ssdTrace_extract.txt"
-    output_file_path = "ssdTrace_extract-modified.txt"
+    input_file_path = "MSR_trace-modified.txt"
+    output_file_path = "MSR_trace-only-write.txt"
     sector_size = 1
 
     #result = Simple_to_ASCII(input_file_path, output_file_path, sector_size)
     #result = Simple_to_ASCII_bitmap(input_file_path, output_file_path, sector_size)
     #result = del_rbw_trace(input_file_path, output_file_path, sector_size)
+    result = del_read_trace(input_file_path, output_file_path)
     result = analyze_trace(output_file_path, sector_size)
     print_result(*result)
     
